@@ -6,8 +6,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null,'../uploads'); 
-  },
+    cb(null, 'uploads')},
   filename: function (req, file, cb) {
   
     cb(null, Date.now() + '_' + file.originalname);
@@ -18,9 +17,10 @@ const upload = multer({ storage: storage });
 
 router.post('/submit-document', authMiddleware, upload.single('pdfFile'), async (req, res) => {
   try {
-    const { productName, quantity, dateOfShipping, vendorIds } = req.body;
+    const { productName, quantity, dateOfShipping,vendorIds} = req.body;
     const pdfFile = req.file;
-
+  // console.log(req.body);
+  // console.log(req.file);
     // Create a new document
     const document = new Document({
       userId: req.user._id,
@@ -44,10 +44,11 @@ router.post('/submit-document', authMiddleware, upload.single('pdfFile'), async 
 
 router.get('/vendor-documents', authMiddleware, async (req, res) => {
   try {
-    const vendorId = req.user._id;
+    const vendorId = req.user.userId;
 
     const vendorDocuments = await Document.find({ vendors: vendorId });
-
+  console.log(vendorId);
+  console.log(vendorDocuments);
     res.status(200).json({ documents: vendorDocuments });
   } catch (err) {
     console.error(err);
